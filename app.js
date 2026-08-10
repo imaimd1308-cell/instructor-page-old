@@ -271,8 +271,8 @@ function renderCompactList(id, courses, emptyText, indexOffset) {
 
 function renderHistory(filter = "") {
   const filteredPast = filter
-    ? pastCourses.filter((course) => course.organization === filter).sort(compareBySort)
-    : [...pastCourses].sort(compareBySort);
+    ? pastCourses.filter((course) => course.organization === filter).sort(compareByCourseStartDesc)
+    : [...pastCourses].sort(compareByCourseStartDesc);
   const archiveCount = document.querySelector("#archiveCount");
   if (archiveCount) archiveCount.textContent = filteredPast.length;
 
@@ -311,13 +311,17 @@ function compareBySort(a, b) {
   return a.sort - b.sort || a.title.localeCompare(b.title, "ko");
 }
 
+function compareByCourseStartDesc(a, b) {
+  return b.courseStart - a.courseStart || b.courseEnd - a.courseEnd || a.title.localeCompare(b.title, "ko");
+}
+
 function classify(courses) {
   const sorted = [...courses].sort(compareBySort);
   const open = sorted.filter((course) => course.applyEnd && today <= course.applyEnd);
   const active = sorted.filter((course) => isBetween(course.courseStart, course.courseEnd)).sort(compareBySort);
   const past = sorted
     .filter((course) => course.courseEnd && course.courseEnd < today)
-    .sort(compareBySort);
+    .sort(compareByCourseStartDesc);
 
   return { open, active, past };
 }
