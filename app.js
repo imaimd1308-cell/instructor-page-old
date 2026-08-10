@@ -271,8 +271,8 @@ function renderCompactList(id, courses, emptyText, indexOffset) {
 
 function renderHistory(filter = "") {
   const filteredPast = filter
-    ? pastCourses.filter((course) => course.organization === filter).sort(compareByCourseStartDesc)
-    : [...pastCourses].sort(compareByCourseStartDesc);
+    ? pastCourses.filter((course) => course.organization === filter).sort(compareByCourseEndDesc)
+    : [...pastCourses].sort(compareByCourseEndDesc);
   const archiveCount = document.querySelector("#archiveCount");
   if (archiveCount) archiveCount.textContent = filteredPast.length;
 
@@ -303,16 +303,12 @@ function renderStats(courses, open, active, past) {
   `;
 }
 
-function compareByCourseStartDesc(a, b) {
-  return b.courseStart - a.courseStart || b.courseEnd - a.courseEnd || a.title.localeCompare(b.title, "ko");
-}
-
 function compareBySort(a, b) {
   return a.sort - b.sort || a.title.localeCompare(b.title, "ko");
 }
 
-function compareByCourseStartDesc(a, b) {
-  return b.courseStart - a.courseStart || b.courseEnd - a.courseEnd || a.title.localeCompare(b.title, "ko");
+function compareByCourseEndDesc(a, b) {
+  return b.courseEnd - a.courseEnd || b.courseStart - a.courseStart || a.title.localeCompare(b.title, "ko");
 }
 
 function classify(courses) {
@@ -321,7 +317,7 @@ function classify(courses) {
   const active = sorted.filter((course) => isBetween(course.courseStart, course.courseEnd)).sort(compareBySort);
   const past = sorted
     .filter((course) => course.courseEnd && course.courseEnd < today)
-    .sort(compareByCourseStartDesc);
+    .sort(compareByCourseEndDesc);
 
   return { open, active, past };
 }
