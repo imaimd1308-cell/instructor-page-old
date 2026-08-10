@@ -1,17 +1,17 @@
 const SHEET_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSE6-9ysb53QIKqBM1NNehiBnUB81xGNdo4Fy7xa_3CxKzd_u8smo65BdquDF35jHoMaNlrdQS0HCXq/pub?gid=0&single=true&output=csv";
+  "https://docs.google.com/spreadsheets/d/1DWGdNUuEKiBONM4WexhokOlg98s1fATSSI2KuX9x7TU/export?format=csv&gid=0";
 
 const columns = {
   visible: "노출",
   featured: "추천노출",
-  title: "강좌명",
+  title: "이름",
   organization: "기관",
-  target: "대상",
+  target: "수강대상",
   format: "강의방식",
-  courseStart: "강의시작일",
-  courseEnd: "강의종료일",
+  courseStart: "시작일",
+  courseEnd: "종료일",
   sessions: "회차",
-  time: "시간",
+  time: "회차당시간",
   applyStart: "신청시작일",
   applyEnd: "신청마감일",
   applyLink: "신청링크",
@@ -70,7 +70,7 @@ function parseCsv(text) {
   const headers = rows.shift() || [];
   return rows
     .filter((items) => items.some(Boolean))
-    .map((items) => Object.fromEntries(headers.map((header, index) => [header, items[index] || ""])));
+    .map((items) => Object.fromEntries(headers.map((header, index) => [header.trim(), items[index] || ""])));
 }
 
 function toDate(value) {
@@ -90,23 +90,23 @@ function normalizeCourse(row) {
   const featuredType = (row[columns.featured] || "").trim().toUpperCase();
 
   return {
-    visible: row[columns.visible] === "T",
+    visible: (row[columns.visible] || "").trim().toUpperCase() === "Y",
     featured: featuredType === "N" || featuredType === "S",
     featuredType,
-    title: row[columns.title],
-    organization: row[columns.organization],
-    target: row[columns.target],
-    format: row[columns.format],
+    title: row[columns.title] || "",
+    organization: row[columns.organization] || "",
+    target: row[columns.target] || "",
+    format: row[columns.format] || "",
     courseStart: toDate(row[columns.courseStart]),
     courseEnd: toDate(row[columns.courseEnd]),
-    sessions: row[columns.sessions],
-    time: row[columns.time],
+    sessions: row[columns.sessions] || "",
+    time: row[columns.time] || "",
     applyStart: toDate(row[columns.applyStart]),
     applyEnd: toDate(row[columns.applyEnd]),
-    applyLink: row[columns.applyLink],
-    applyMethod: row[columns.applyMethod],
-    summary: row[columns.summary],
-    tags: row[columns.tags].split("/").map((tag) => tag.trim()).filter(Boolean),
+    applyLink: row[columns.applyLink] || "",
+    applyMethod: row[columns.applyMethod] || "",
+    summary: row[columns.summary] || "",
+    tags: (row[columns.tags] || "").split("/").map((tag) => tag.trim()).filter(Boolean),
     sort: Number(row[columns.sort] || 999)
   };
 }
@@ -271,8 +271,8 @@ function renderCompactList(id, courses, emptyText, indexOffset) {
 
 function renderHistory(filter = "") {
   const filteredPast = filter
-    ? pastCourses.filter((course) => course.organization === filter).sort(compareByCourseStartDesc)
-    : [...pastCourses].sort(compareByCourseStartDesc);
+    ? pastCourses.filter((course) => course.organization === filter).sort(compareBySort)
+    : [...pastCourses].sort(compareBySort);
   const archiveCount = document.querySelector("#archiveCount");
   if (archiveCount) archiveCount.textContent = filteredPast.length;
 
@@ -307,13 +307,17 @@ function compareByCourseStartDesc(a, b) {
   return b.courseStart - a.courseStart || b.courseEnd - a.courseEnd || a.title.localeCompare(b.title, "ko");
 }
 
+function compareBySort(a, b) {
+  return a.sort - b.sort || a.title.localeCompare(b.title, "ko");
+}
+
 function classify(courses) {
-  const sorted = [...courses].sort((a, b) => a.sort - b.sort);
+  const sorted = [...courses].sort(compareBySort);
   const open = sorted.filter((course) => course.applyEnd && today <= course.applyEnd);
-  const active = sorted.filter((course) => isBetween(course.courseStart, course.courseEnd)).sort(compareByCourseStartDesc);
+  const active = sorted.filter((course) => isBetween(course.courseStart, course.courseEnd)).sort(compareBySort);
   const past = sorted
     .filter((course) => course.courseEnd && course.courseEnd < today)
-    .sort(compareByCourseStartDesc);
+    .sort(compareBySort);
 
   return { open, active, past };
 }
