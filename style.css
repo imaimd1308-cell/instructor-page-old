@@ -891,7 +891,7 @@ body[data-page="history"] .course-list.compact {
   width: min(100%, 520px);
   max-height: min(82vh, 620px);
   overflow: auto;
-  padding: 24px;
+  padding: 26px;
   border-radius: 8px;
   background: #fff;
   box-shadow: 0 28px 80px rgba(4, 17, 35, 0.36);
@@ -913,24 +913,75 @@ body[data-page="history"] .course-list.compact {
 }
 
 .modal-panel h3 {
-  margin: 4px 36px 14px 0;
+  margin: 6px 38px 16px 0;
   color: var(--navy);
-  font-size: 1.34rem;
-  line-height: 1.32;
+  font-size: 1.46rem;
+  line-height: 1.26;
 }
 
 .modal-meta {
   display: grid;
-  gap: 7px;
-  color: var(--muted);
-  font-size: 0.95rem;
-  font-weight: 750;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  color: #25364c;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.modal-meta span {
+  display: grid;
+  gap: 3px;
+  padding: 10px 11px;
+  border-radius: 8px;
+  background: #f3f8ff;
+}
+
+.modal-meta strong {
+  color: #6a7a8e;
+  font-size: 0.76rem;
+  font-weight: 900;
 }
 
 .modal-summary {
-  margin: 18px 0;
-  color: #3f5066;
-  line-height: 1.65;
+  margin: 16px 0 12px;
+  padding: 14px;
+  border-radius: 8px;
+  background: #fbfcfe;
+  color: #344760;
+  line-height: 1.58;
+  font-weight: 650;
+}
+
+.modal-apply-card {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #eef6ff 0%, #ffffff 100%);
+  border: 1px solid rgba(29, 93, 143, 0.16);
+}
+
+.modal-apply-card > span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--blue);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.modal-apply-card .apply-button {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.modal-apply-card p {
+  margin: 9px 0 0;
+  color: #43556c;
+  line-height: 1.5;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .news-modal-panel {

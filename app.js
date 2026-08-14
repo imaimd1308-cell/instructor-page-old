@@ -220,15 +220,15 @@ function featuredApply(course) {
   const applyState = getApplyState(course);
 
   if (applyState.message) {
-    return `<button class="apply-button muted" type="button" data-message="${applyState.message}">${applyState.label}</button>`;
+    return `<div class="modal-apply-card"><span>신청 안내</span><button class="apply-button muted" type="button" data-message="${applyState.message}">${applyState.label}</button></div>`;
   }
 
   if (course.applyLink) {
-    return `<a class="apply-button" href="${course.applyLink}" target="_blank" rel="noreferrer">${applyState.label}</a>`;
+    return `<div class="modal-apply-card"><span>신청 바로가기</span><a class="apply-button" href="${course.applyLink}" target="_blank" rel="noreferrer">${applyState.label}</a></div>`;
   }
 
   if (course.applyMethod) {
-    return `<button class="apply-button" type="button" data-message="${course.applyMethod}">${applyState.label}</button>`;
+    return `<div class="modal-apply-card"><span>신청 방법</span><button class="apply-button" type="button" data-message="${course.applyMethod}">${applyState.label}</button><p>${escapeHtml(course.applyMethod)}</p></div>`;
   }
 
   return "";
@@ -240,9 +240,10 @@ function openFeaturedModal(course) {
     .join("");
   document.querySelector("#modalTitle").textContent = course.title;
   document.querySelector("#modalMeta").innerHTML = `
-    <span>${escapeHtml(course.organization)} · ${escapeHtml(course.target)} · ${escapeHtml(course.format)}</span>
-    <span>${formatDate(course.courseStart)} - ${formatDate(course.courseEnd)}</span>
-    <span>${escapeHtml(course.time)} · ${escapeHtml(course.sessions)}회차</span>
+    <span><strong>기관</strong>${escapeHtml(course.organization)}</span>
+    <span><strong>대상</strong>${escapeHtml(course.target)} · ${escapeHtml(course.format)}</span>
+    <span><strong>기간</strong>${formatDate(course.courseStart)} - ${formatDate(course.courseEnd)}</span>
+    <span><strong>구성</strong>${escapeHtml(course.time)} · ${escapeHtml(course.sessions)}회차</span>
   `;
   document.querySelector("#modalSummary").textContent = course.summary;
   document.querySelector("#modalTags").innerHTML = course.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("");
