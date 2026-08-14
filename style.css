@@ -984,6 +984,69 @@ body[data-page="history"] .course-list.compact {
   font-weight: 700;
 }
 
+.native-history-filter {
+  display: none;
+}
+
+.history-picker-button {
+  min-height: 42px;
+  padding: 0 42px 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background:
+    linear-gradient(45deg, transparent 50%, #07182f 50%) right 16px center / 6px 6px no-repeat,
+    linear-gradient(135deg, #ffffff 0%, #fff8e8 100%);
+  color: #07182f;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 900;
+  box-shadow: 0 10px 22px rgba(201, 162, 74, 0.2);
+  cursor: pointer;
+}
+
+.picker-panel,
+.notice-panel {
+  max-width: 390px;
+}
+
+.picker-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.picker-option {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 13px;
+  border: 1px solid rgba(18, 54, 95, 0.1);
+  border-radius: 8px;
+  background: #f6f9fc;
+  color: #172b44;
+  font: inherit;
+  font-weight: 850;
+  text-align: left;
+  cursor: pointer;
+}
+
+.picker-option.is-selected {
+  background: #12365f;
+  color: #ffffff;
+}
+
+.notice-panel p {
+  margin: 10px 0 16px;
+  color: #344760;
+  line-height: 1.55;
+  font-weight: 750;
+}
+
+.notice-panel .apply-button {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 0;
+}
+
 .news-modal-panel {
   max-width: 360px;
 }

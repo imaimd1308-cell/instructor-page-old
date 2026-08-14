@@ -293,6 +293,49 @@ function renderHistoryFilter(courses) {
     <option value="">전체 기관</option>
     ${organizations.map((organization) => `<option value="${escapeHtml(organization)}">${escapeHtml(organization)}</option>`).join("")}
   `;
+  renderHistoryPicker(organizations);
+}
+
+function renderHistoryPicker(organizations) {
+  const filter = document.querySelector("#historyFilter");
+  if (!filter) return;
+  filter.classList.add("native-history-filter");
+
+  let button = document.querySelector("#historyPickerButton");
+  if (!button) {
+    button = document.createElement("button");
+    button.type = "button";
+    button.id = "historyPickerButton";
+    button.className = "history-picker-button";
+    button.setAttribute("data-history-picker-open", "");
+    filter.insertAdjacentElement("afterend", button);
+  }
+  button.textContent = filter.value || "전체 기관";
+
+  let modal = document.querySelector("#historyPickerModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.className = "modal picker-modal";
+    modal.id = "historyPickerModal";
+    modal.setAttribute("aria-hidden", "true");
+    document.body.appendChild(modal);
+  }
+
+  const items = ["", ...organizations];
+  modal.innerHTML = `
+    <div class="modal-backdrop" data-close-picker></div>
+    <article class="modal-panel picker-panel" role="dialog" aria-modal="true" aria-labelledby="historyPickerTitle">
+      <button class="modal-close" type="button" aria-label="닫기" data-close-picker>×</button>
+      <h3 id="historyPickerTitle">기관 선택</h3>
+      <div class="picker-list">
+        ${items.map((organization) => `
+          <button class="picker-option${filter.value === organization ? " is-selected" : ""}" type="button" data-history-filter-value="${escapeHtml(organization)}">
+            ${organization ? escapeHtml(organization) : "전체 기관"}
+          </button>
+        `).join("")}
+      </div>
+    </article>
+  `;
 }
 
 function renderStats(courses, open, active, past) {
@@ -326,7 +369,7 @@ function classify(courses) {
 document.addEventListener("click", (event) => {
   const button = event.target.closest("[data-message]");
   if (!button) return;
-  alert(button.dataset.message);
+  showNotice(button.dataset.message);
 });
 
 const themeAudio = new Audio("./sidinol-theme.mp3");
@@ -345,7 +388,7 @@ document.addEventListener("click", async (event) => {
       button.classList.remove("is-playing");
     }
   } catch {
-    alert("음악 파일을 재생하지 못했습니다.");
+    showNotice("음악 파일을 재생하지 못했습니다.");
   }
 });
 
@@ -395,9 +438,67 @@ document.addEventListener("click", (event) => {
   document.querySelector("#newsModal").setAttribute("aria-hidden", "true");
 });
 
+document.addEventListener("click", (event) => {
+  if (!event.target.closest("[data-history-picker-open]")) return;
+  const modal = document.querySelector("#historyPickerModal");
+  if (!modal) return;
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+});
+
+document.addEventListener("click", (event) => {
+  const option = event.target.closest("[data-history-filter-value]");
+  if (!option) return;
+  const value = option.dataset.historyFilterValue || "";
+  const filter = document.querySelector("#historyFilter");
+  const button = document.querySelector("#historyPickerButton");
+  const modal = document.querySelector("#historyPickerModal");
+  if (filter) filter.value = value;
+  if (button) button.textContent = value || "전체 기관";
+  renderHistory(value);
+  modal?.classList.remove("is-open");
+  modal?.setAttribute("aria-hidden", "true");
+  renderHistoryPicker([...new Set([...pastCourses, ...activeCourses].map((course) => course.organization).filter(Boolean))].sort((a, b) => a.localeCompare(b, "ko")));
+});
+
+document.addEventListener("click", (event) => {
+  if (!event.target.closest("[data-close-picker]")) return;
+  document.querySelector("#historyPickerModal")?.classList.remove("is-open");
+  document.querySelector("#historyPickerModal")?.setAttribute("aria-hidden", "true");
+});
+
+document.addEventListener("click", (event) => {
+  if (!event.target.closest("[data-close-notice]")) return;
+  document.querySelector("#noticeModal")?.classList.remove("is-open");
+  document.querySelector("#noticeModal")?.setAttribute("aria-hidden", "true");
+});
+
 document.querySelector("#historyFilter")?.addEventListener("change", (event) => {
   renderHistory(event.target.value);
 });
+
+function showNotice(message, title = "안내") {
+  let modal = document.querySelector("#noticeModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.className = "modal notice-modal";
+    modal.id = "noticeModal";
+    modal.setAttribute("aria-hidden", "true");
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div class="modal-backdrop" data-close-notice></div>
+    <article class="modal-panel notice-panel" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
+      <button class="modal-close" type="button" aria-label="닫기" data-close-notice>×</button>
+      <h3 id="noticeTitle">${escapeHtml(title)}</h3>
+      <p>${escapeHtml(message)}</p>
+      <button class="apply-button" type="button" data-close-notice>확인</button>
+    </article>
+  `;
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+}
 
 async function init() {
   try {
