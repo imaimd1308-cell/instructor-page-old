@@ -355,10 +355,14 @@ function compareByCourseEndDesc(a, b) {
   return b.courseEnd - a.courseEnd || b.courseStart - a.courseStart || a.title.localeCompare(b.title, "ko");
 }
 
+function compareByCourseStartDesc(a, b) {
+  return b.courseStart - a.courseStart || a.title.localeCompare(b.title, "ko");
+}
+
 function classify(courses) {
   const sorted = [...courses].sort(compareBySort);
   const open = sorted.filter((course) => course.applyEnd && today <= course.applyEnd);
-  const active = sorted.filter((course) => isBetween(course.courseStart, course.courseEnd)).sort(compareBySort);
+  const active = sorted.filter((course) => isBetween(course.courseStart, course.courseEnd)).sort(compareByCourseStartDesc);
   const past = sorted
     .filter((course) => course.courseEnd && course.courseEnd < today)
     .sort(compareByCourseEndDesc);
